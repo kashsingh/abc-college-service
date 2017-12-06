@@ -1,5 +1,6 @@
 package org.abc.data.entity;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
@@ -7,6 +8,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.persistence.*;
 
+@JsonInclude(value = JsonInclude.Include.NON_EMPTY, content = JsonInclude.Include.NON_NULL)
 @Entity
 @Data
 public class Marks {
@@ -19,27 +21,31 @@ public class Marks {
 
     @Nonnull
     @JsonProperty("studentId")
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "student_id")
     private Student student;
 
     @Nonnull
     @JsonProperty("subjectId")
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "subject_id")
     private Subject subject;
 
-    @Nonnull
-    @JsonProperty("semester")
     @Column(name = "semester", columnDefinition = "TINYINT", nullable = false)
     private int semester;
 
-    @Nullable
-    @JsonProperty("marks")
     @Column(name = "marks", columnDefinition = "FLOAT")
     private float marks;
 
-    public Marks(Integer id, @Nonnull Student student, @Nonnull Subject subject, @Nonnull int semester, float marks) {
+    public Marks() {
+    }
+
+    public Marks(
+            @JsonProperty("id") @Nullable Integer id,
+            @JsonProperty("studentId") @Nonnull Student student,
+            @JsonProperty("subjectId") @Nonnull Subject subject,
+            @JsonProperty("semester") int semester,
+            @JsonProperty("marks") float marks) {
         this.id = id;
         this.student = student;
         this.subject = subject;

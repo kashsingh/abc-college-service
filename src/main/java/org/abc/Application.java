@@ -24,10 +24,8 @@ public class Application extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
 
         http
-                .authorizeRequests()
-                .antMatchers("/public/**", "/static/**", "/scripts/**", "/styles/**", "/user/**").permitAll()
-                .and()
-                .csrf().ignoringAntMatchers("/ext/**", "/api/**");
+                .csrf().disable().authorizeRequests()
+                .antMatchers("/api").permitAll();
 
         http.headers().cacheControl().disable();
     }

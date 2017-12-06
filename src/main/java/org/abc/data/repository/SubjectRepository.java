@@ -4,13 +4,13 @@ import org.abc.data.entity.Course;
 import org.abc.data.entity.Subject;
 import org.springframework.data.repository.CrudRepository;
 
+import java.util.List;
+
 public interface SubjectRepository extends CrudRepository<Subject, Integer> {
 
     Subject findSubjectById(Integer id);
 
-    Subject findSubjectBySubjectName(String subjectName);
-
-    Subject findSubjectByCourse(Course course);       //Don't weather this is correct or not
+    List<Subject> findSubjectsByCourse(Course course);
 
 
 }
