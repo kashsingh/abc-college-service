@@ -97,9 +97,8 @@ public class AdminServiceImpl implements AdminService {
 
     @Nonnull
     @Override
-    public Pair<Student, Double> getTopperStudentForBatch(Course course, String batch) throws NotFoundException {
+    public List<Pair> getTopperStudentForBatch(Course course, String batch) throws NotFoundException {
         List<Student> allClassStudents = studentRepository.findStudentsByCourseAndBatch(course, batch);
-
         if (allClassStudents == null) {
             throw new NotFoundException("No student found for the class.");
         } else {
@@ -115,19 +114,23 @@ public class AdminServiceImpl implements AdminService {
                     noOfSubjects++;
                 }
 
-                studentPercentage /= noOfSubjects * 100;
+                studentPercentage /= noOfSubjects;
                 if (studentPercentage > highestPercentage) {
                     highestPercentage = studentPercentage;
                     classTopper = student;
                 }
             }
-            return Pair.of(classTopper, highestPercentage);
+
+            List<Pair> topperResult = new ArrayList<>();
+            topperResult.add(Pair.of("topper", classTopper));
+            topperResult.add(Pair.of("percentage", highestPercentage));
+            return topperResult;
         }
     }
 
     @Nonnull
     @Override
-    public Pair<Subject, Subject> getHighestAndLowestScoreSubjects(Course course) throws NotFoundException {
+    public List<Pair> getHighestAndLowestScoreSubjects(Course course) throws NotFoundException {
         List<Subject> allSubjectsOfCourse = subjectRepository.findSubjectsByCourse(course);
 
         if (allSubjectsOfCourse == null) {
@@ -162,21 +165,23 @@ public class AdminServiceImpl implements AdminService {
                     lowScoreSubject = subject;
                 }
             }
-            return Pair.of(highScoreSubject, lowScoreSubject);
+            List<Pair> highLowScoreSubjects = new ArrayList<>();
+            highLowScoreSubjects.add(Pair.of("high", highScoreSubject));
+            highLowScoreSubjects.add(Pair.of("low", lowScoreSubject));
+            return highLowScoreSubjects;
         }
     }
 
     @Nonnull
     @Override
-    public List<Pair<Student, Double>> getClassResult(Course course, String batch, double threshold) throws NotFoundException {
+    public List<Pair> getClassResult(Course course, String batch, double threshold) throws NotFoundException {
         List<Student> allClassStudents = studentRepository.findStudentsByCourseAndBatch(course, batch);
 
         if (allClassStudents == null) {
-
             throw new NotFoundException("No Student found for the Batch!");
 
         } else {
-            List<Pair<Student, Double>> classResult = new ArrayList<>();
+            List<Pair> classResult = new ArrayList<>();
             for (Student student : allClassStudents) {
                 double studentPercentage = 0.0;
                 int noOfSubjects = 0;
@@ -187,10 +192,14 @@ public class AdminServiceImpl implements AdminService {
                     noOfSubjects++;
                 }
 
-                studentPercentage /= noOfSubjects * 100;
+                studentPercentage = studentPercentage / noOfSubjects;
                 if (studentPercentage >= threshold) {
                     classResult.add(Pair.of(student, studentPercentage));
                 }
+            }
+
+            if (classResult.isEmpty()) {
+                throw new NotFoundException("No student found above this threshold");
             }
             return classResult;
         }

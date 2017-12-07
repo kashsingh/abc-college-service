@@ -128,6 +128,20 @@ public class AdminController {
         }
     }
 
+    @RequestMapping(value = "/subject/update", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Object> updateSubject(@RequestBody Subject subject) {
+        try {
+            subjectService.updateSubject(subject);
+            return new ResponseEntity<>(ImmutableMap.of("message", "Subject Record Updated"), HttpStatus.OK);
+        } catch (NotFoundException e) {
+            System.out.println(e);
+            return new ResponseEntity<>(ImmutableMap.of("message", e.getMessage()), null, HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(ImmutableMap.of("message", "Internal Server Error"), null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @RequestMapping(value = "subject/{subject_id}/delete", method = RequestMethod.DELETE)
     public ResponseEntity<Object> deleteSubject(@PathVariable("subject_id") int subjectId) {
         try {

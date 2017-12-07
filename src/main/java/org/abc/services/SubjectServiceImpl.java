@@ -62,7 +62,7 @@ public class SubjectServiceImpl implements SubjectService {
     public Subject getSubject(int subjectId) throws NotFoundException {
         Subject subject = subjectRepository.findSubjectById(subjectId);
         if (subject == null) {
-            throw new NotFoundException(String.format("Student with id %s not found", subjectId));
+            throw new NotFoundException(String.format("Subject with id %s not found", subjectId));
         }
         return subject;
     }
@@ -70,6 +70,10 @@ public class SubjectServiceImpl implements SubjectService {
     @Nonnull
     @Override
     public List<Subject> viewCourseSubjects(Course course) throws NotFoundException {
-        return subjectRepository.findSubjectsByCourse(course);
+        List<Subject> allCourseSubject = subjectRepository.findSubjectsByCourse(course);
+        if (allCourseSubject == null){
+            throw new NotFoundException("No subjects found for the course");
+        }
+        return allCourseSubject;
     }
 }

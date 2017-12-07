@@ -25,12 +25,12 @@ public interface AdminService {
     void assignStudentMarks(int studentID, List<Marks> marks) throws NotFoundException;
 
     @Nonnull
-    Pair<Student, Double> getTopperStudentForBatch(Course course, String batch) throws NotFoundException;
+    List<Pair> getTopperStudentForBatch(Course course, String batch) throws NotFoundException;
 
     @Nonnull
-    Pair<Subject, Subject> getHighestAndLowestScoreSubjects(Course course) throws NotFoundException;
+    List<Pair> getHighestAndLowestScoreSubjects(Course course) throws NotFoundException;
 
     @Nonnull
-    List<Pair<Student, Double>> getClassResult(Course course, String batch, double threshold) throws NotFoundException;
+    List<Pair> getClassResult(Course course, String batch, double threshold) throws NotFoundException;
 
 }

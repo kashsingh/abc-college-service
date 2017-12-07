@@ -1,5 +1,6 @@
 package org.abc.data.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
@@ -23,6 +24,7 @@ public class Admin {
     private String email;
 
     @Nonnull
+    @JsonIgnore
     @Column(name = "password", columnDefinition = "VARCHAR(64)", nullable = false)
     private String password;
 
