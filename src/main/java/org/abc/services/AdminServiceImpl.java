@@ -1,13 +1,12 @@
 package org.abc.services;
 
 
-import org.abc.data.entity.Course;
-import org.abc.data.entity.Marks;
-import org.abc.data.entity.Student;
-import org.abc.data.entity.Subject;
+import org.abc.data.DTO.StudentUser;
+import org.abc.data.entity.*;
 import org.abc.data.repository.MarksRepository;
 import org.abc.data.repository.StudentRepository;
 import org.abc.data.repository.SubjectRepository;
+import org.abc.data.repository.UserRepository;
 import org.abc.exceptions.NotFoundException;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +20,9 @@ import java.util.List;
 public class AdminServiceImpl implements AdminService {
 
     @Nonnull
+    private UserRepository userRepository;
+
+    @Nonnull
     private StudentRepository studentRepository;
 
     @Nonnull
@@ -28,6 +30,11 @@ public class AdminServiceImpl implements AdminService {
 
     @Nonnull
     private MarksRepository marksRepository;
+
+    @Autowired
+    public void setUserRepository(@Nonnull UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Autowired
     public void setMarksRepository(@Nonnull MarksRepository marksRepository) {
@@ -45,8 +52,13 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public void createStudent(Student student) {
-        student.setCurrentSemester(0);
+    public void createStudentUser(StudentUser studentUser) {
+        System.out.print(studentUser);
+        userRepository.save(studentUser.getUser());
+
+        User user = studentUser.getUser();
+        user = userRepository.findUserByEmail(user.getEmail());
+        Student student = new Student(null, user, studentUser.getCourse(), studentUser.getBatch(), 0);
         studentRepository.save(student);
     }
 

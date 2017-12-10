@@ -1,10 +1,8 @@
 package org.abc.controllers;
 
 import com.google.common.collect.ImmutableMap;
-import org.abc.data.entity.Course;
-import org.abc.data.entity.Marks;
-import org.abc.data.entity.Student;
-import org.abc.data.entity.Subject;
+import org.abc.data.DTO.StudentUser;
+import org.abc.data.entity.*;
 import org.abc.exceptions.NotFoundException;
 import org.abc.services.AdminService;
 import org.abc.services.SubjectService;
@@ -42,9 +40,9 @@ public class AdminController {
     }
 
     @RequestMapping(value = "/student/create", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> createStudent(@RequestBody Student student) {
+    public ResponseEntity<Object> createStudent(@RequestBody StudentUser studentUser) {
         try {
-            adminService.createStudent(student);
+            adminService.createStudentUser(studentUser);
             return new ResponseEntity<>(ImmutableMap.of("message", "Created"), HttpStatus.CREATED);
         } catch (Exception e) {
             e.printStackTrace();

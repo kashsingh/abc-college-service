@@ -60,4 +60,5 @@ public class Student {
         this.batch = batch;
         this.currentSemester = currentSemester;
         }
+
 }

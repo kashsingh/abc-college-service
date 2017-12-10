@@ -1,9 +1,7 @@
 package org.abc.services;
 
-import org.abc.data.entity.Course;
-import org.abc.data.entity.Marks;
-import org.abc.data.entity.Student;
-import org.abc.data.entity.Subject;
+import org.abc.data.DTO.StudentUser;
+import org.abc.data.entity.*;
 import org.abc.exceptions.NotFoundException;
 import org.apache.commons.lang3.tuple.Pair;
 import org.aspectj.weaver.ast.Not;
@@ -13,7 +11,7 @@ import java.util.List;
 
 public interface AdminService {
 
-    void createStudent(Student student);
+    void createStudentUser(StudentUser studentUser);
 
     @Nonnull
     Student getStudent(int studentId) throws NotFoundException;

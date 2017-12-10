@@ -5,5 +5,7 @@ import org.abc.data.entity.User;
 
 public interface UserService {
 
-    void createUser(User user);
+    User getUser(int userId);
+
+
 }
