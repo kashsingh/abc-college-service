@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface StudentRepository extends CrudRepository<Student, Integer> {
 
-    Student findStudentById(int id);
+    Student findStudentById(Integer id);
 
     List<Student> findStudentsByCourseAndBatch(Course course, String batch);
 }

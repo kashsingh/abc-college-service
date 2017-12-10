@@ -6,13 +6,9 @@ import lombok.Data;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Data
@@ -37,9 +33,9 @@ public class User {
     private String password;
 
     @Nonnull
-    @Enumerated(EnumType.STRING)
-    @Column(name = "role", nullable = false)
-    private Role role;
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id")
+    private Set<Role> roles = new HashSet<>();
 
     @Nonnull
     @Column(name = "phone", columnDefinition = "VARCHAR(11)", nullable = false)
@@ -59,17 +55,17 @@ public class User {
             @JsonProperty("name") @Nonnull String name,
             @JsonProperty("email") @Nonnull String email,
             @JsonProperty("password") @Nonnull String password,
-            @JsonProperty("role") @Nonnull Role role,
+            @JsonProperty("roles") @Nonnull Set<Role> roles,
             @JsonProperty("phone") @Nonnull String phone,
-            @JsonProperty("gender") @Nonnull char gender) {
+            @JsonProperty("gender") @Nonnull char gender, boolean enabled) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
-        this.role = role;
+        this.roles = roles;
         this.phone = phone;
         this.gender = gender;
-        this.enabled = true;
+        this.enabled = enabled;
     }
 
     @Nonnull

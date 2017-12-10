@@ -14,8 +14,6 @@ public interface StudentService {
     @Nonnull
     Student getStudent(int studentId) throws NotFoundException;
 
-    void updateStudent(Student student) throws NotFoundException;
-
     void enrollSemester(Student student, List<Subject> subjects) throws BadRequestException, NotFoundException;
 
     @Nonnull

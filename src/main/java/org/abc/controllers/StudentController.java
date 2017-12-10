@@ -3,9 +3,11 @@ package org.abc.controllers;
 import com.google.common.collect.ImmutableMap;
 import org.abc.data.entity.Student;
 import org.abc.data.entity.Subject;
+import org.abc.data.entity.User;
 import org.abc.exceptions.BadRequestException;
 import org.abc.exceptions.NotFoundException;
 import org.abc.services.StudentService;
+import org.abc.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -26,6 +28,14 @@ public class StudentController {
     @Nonnull
     private StudentService studentService;
 
+    @Nonnull
+    private UserService userService;
+
+    @Autowired
+    public void setUserService(@Nonnull UserService userService) {
+        this.userService = userService;
+    }
+
     @Autowired
     public void setStudentService(@Nonnull StudentService studentService) {
         this.studentService = studentService;
@@ -45,10 +55,10 @@ public class StudentController {
     }
 
     @RequestMapping(value = "/update", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> updateStudent(@RequestBody Student student) {
+    public ResponseEntity<Object> updateStudent(@RequestBody User user) {
         try {
-            studentService.updateStudent(student);
-            return new ResponseEntity<>(ImmutableMap.of("message", "Student Record Updated"), HttpStatus.OK);
+            userService.updateUser(user);
+            return new ResponseEntity<>(ImmutableMap.of("message", "User Record Updated"), HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(ImmutableMap.of("message", "Internal Server Error"), null, HttpStatus.INTERNAL_SERVER_ERROR);

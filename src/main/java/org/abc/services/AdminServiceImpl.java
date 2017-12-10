@@ -11,7 +11,6 @@ import org.abc.exceptions.NotFoundException;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,12 +52,18 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public void createStudentUser(StudentUser studentUser) {
-        System.out.print(studentUser);
-        userRepository.save(studentUser.getUser());
-
         User user = studentUser.getUser();
+        userRepository.save(user);
+
+
         user = userRepository.findUserByEmail(user.getEmail());
-        Student student = new Student(null, user, studentUser.getCourse(), studentUser.getBatch(), 0);
+        System.out.print(user);
+        Student student = new Student();    //null, user, studentUser.getCourse(), studentUser.getBatch(), 0
+        student.setId(null);
+        student.setUser(user);
+        student.setCourse(studentUser.getCourse());
+        student.setBatch(studentUser.getBatch());
+        student.setCurrentSemester(0);
         studentRepository.save(student);
     }
 

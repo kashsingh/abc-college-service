@@ -53,16 +53,6 @@ public class StudentServiceImpl implements StudentService {
         return student;
     }
 
-    @Override
-    public void updateStudent(Student student) throws NotFoundException {
-        Student existingStudent = studentRepository.findStudentById(student.getId());
-        if (existingStudent == null) {
-            throw new NotFoundException("Student not found!!");
-        } else {
-            existingStudent.setBatch(student.getBatch());
-            studentRepository.save(existingStudent);
-        }
-    }
 
     @Override
     public void enrollSemester(Student student, List<Subject> subjects) throws BadRequestException, NotFoundException {
