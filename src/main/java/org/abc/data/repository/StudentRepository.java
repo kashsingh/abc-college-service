@@ -10,7 +10,5 @@ public interface StudentRepository extends CrudRepository<Student, Integer> {
 
     Student findStudentById(int id);
 
-    List<Student> findStudentsByName(String name);
-
     List<Student> findStudentsByCourseAndBatch(Course course, String batch);
 }

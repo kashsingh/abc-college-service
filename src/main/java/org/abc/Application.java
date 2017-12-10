@@ -10,23 +10,14 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
-@EnableGlobalMethodSecurity(prePostEnabled = true)
-@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
+
 @EnableScheduling
 @SpringBootApplication(scanBasePackages = {"org.abc"})
-public class Application extends WebSecurityConfigurerAdapter {
+public class Application  {
 
     public static void main(String[] args) {
+
         SpringApplication.run(Application.class, args);
     }
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-
-        http
-                .csrf().disable().authorizeRequests()
-                .antMatchers("/api").permitAll();
-
-        http.headers().cacheControl().disable();
-    }
 }

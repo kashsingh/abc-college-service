@@ -31,6 +31,6 @@ public interface AdminService {
     List<Pair> getHighestAndLowestScoreSubjects(Course course) throws NotFoundException;
 
     @Nonnull
-    List<Pair> getClassResult(Course course, String batch, double threshold) throws NotFoundException;
+    List<List<Pair>> getClassResult(Course course, String batch, double threshold) throws NotFoundException;
 
 }

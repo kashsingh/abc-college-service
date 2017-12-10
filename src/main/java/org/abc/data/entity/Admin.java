@@ -1,6 +1,5 @@
 package org.abc.data.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
@@ -20,26 +19,18 @@ public class Admin {
     private Integer id;
 
     @Nonnull
-    @Column(name = "email", columnDefinition = "VARCHAR(255)", nullable = false)
-    private String email;
+    @JsonProperty("userId")
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id")
+    private User user;
 
-    @Nonnull
-    @JsonIgnore
-    @Column(name = "password", columnDefinition = "VARCHAR(64)", nullable = false)
-    private String password;
-
-    @Nonnull
-    @Column(name = "name", columnDefinition = "VARCHAR(255)", nullable = false)
-    private String name;
+    public Admin() {
+    }
 
     public Admin(
             @JsonProperty("id") Integer id,
-            @JsonProperty("email") @Nonnull String email,
-            @JsonProperty("password")@Nonnull String password,
-            @JsonProperty("name") @Nonnull String name) {
+            @JsonProperty("userId") @Nonnull User user) {
         this.id = id;
-        this.email = email;
-        this.password = password;
-        this.name = name;
+        this.user = user;
     }
 }

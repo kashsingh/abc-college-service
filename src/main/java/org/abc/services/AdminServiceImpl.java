@@ -174,14 +174,14 @@ public class AdminServiceImpl implements AdminService {
 
     @Nonnull
     @Override
-    public List<Pair> getClassResult(Course course, String batch, double threshold) throws NotFoundException {
+    public List<List<Pair>> getClassResult(Course course, String batch, double threshold) throws NotFoundException {
         List<Student> allClassStudents = studentRepository.findStudentsByCourseAndBatch(course, batch);
 
         if (allClassStudents == null) {
             throw new NotFoundException("No Student found for the Batch!");
 
         } else {
-            List<Pair> classResult = new ArrayList<>();
+            List<List<Pair>> classResult = new ArrayList<>();
             for (Student student : allClassStudents) {
                 double studentPercentage = 0.0;
                 int noOfSubjects = 0;
@@ -194,7 +194,10 @@ public class AdminServiceImpl implements AdminService {
 
                 studentPercentage = studentPercentage / noOfSubjects;
                 if (studentPercentage >= threshold) {
-                    classResult.add(Pair.of(student, studentPercentage));
+                    List<Pair> studentResult = new ArrayList<>();
+                    studentResult.add(Pair.of("student",student));
+                    studentResult.add(Pair.of("percentage", studentPercentage));
+                    classResult.add(studentResult);
                 }
             }
 

@@ -59,10 +59,7 @@ public class StudentServiceImpl implements StudentService {
         if (existingStudent == null) {
             throw new NotFoundException("Student not found!!");
         } else {
-            existingStudent.setEmail(student.getEmail());
-            existingStudent.setName(student.getName());
-            existingStudent.setPhone(student.getPhone());
-            existingStudent.setGender(student.getGender());
+            existingStudent.setBatch(student.getBatch());
             studentRepository.save(existingStudent);
         }
     }
@@ -87,7 +84,7 @@ public class StudentServiceImpl implements StudentService {
                     Marks mark = new Marks(null, student, subject, currentSemester, 0);
                     subjectMarks.add(mark);
                 } else {
-                    student.setCurrentSemester(currentSemester-1);
+                    student.setCurrentSemester(currentSemester - 1);
                     studentRepository.save(student);
                     throw new BadRequestException("Course didn't match for the student and subject");
                 }
@@ -104,7 +101,7 @@ public class StudentServiceImpl implements StudentService {
             throw new NotFoundException("Student not found!");
         } else {
             List<Marks> studentSemesterResult = marksRepository.findMarksByStudentIdAndSemester(studentId, semester);
-            if(studentSemesterResult == null){
+            if (studentSemesterResult == null) {
                 throw new NotFoundException("No results found for the semester");
             }
             return studentSemesterResult;
