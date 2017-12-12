@@ -14,9 +14,9 @@ public class StudentUser {
     public StudentUser() {
     }
 
-    public void setUser(User user) {
-        user.setEnabled(true);
-        user.setRole(Role.ROLE_USER);
+    public StudentUser(User user, Course course, String batch) {
         this.user = user;
+        this.course = course;
+        this.batch = batch;
     }
 }
