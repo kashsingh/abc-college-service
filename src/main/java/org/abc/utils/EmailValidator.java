@@ -1,4 +1,4 @@
-package org.abc.validator;
+package org.abc.utils;
 
 import org.abc.annotations.ValidEmail;
 

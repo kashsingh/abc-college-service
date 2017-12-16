@@ -3,6 +3,7 @@ package org.abc.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.abc.data.DTO.UserCred;
 import org.abc.data.entity.User;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -30,9 +31,9 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         try {
-            User user = new ObjectMapper().readValue(request.getInputStream(), User.class);
+            UserCred userCred = new ObjectMapper().readValue(request.getInputStream(), UserCred.class);
             return this.authenticationManager
-                    .authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
+                    .authenticate(new UsernamePasswordAuthenticationToken(userCred.getUsername(), userCred.getPassword()));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -48,7 +49,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 .builder()
                 .setSubject(username)
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .signWith(SignatureAlgorithm.HS512, SECRET)
+                .signWith(SignatureAlgorithm.HS256, SECRET)
                 .compact();
         String bearerToken = TOKEN_PREFIX + token;
         response.getWriter().write(bearerToken);

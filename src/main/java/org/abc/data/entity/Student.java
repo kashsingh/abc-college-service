@@ -18,7 +18,7 @@ public class Student {
     private Integer id;
 
     @Nonnull
-    @JsonProperty("userId")
+    @JsonProperty("user_id")
     @OneToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "user_id")
     private User user;
@@ -42,7 +42,7 @@ public class Student {
 
     public Student(
             @JsonProperty("id") Integer id,
-            @JsonProperty("userId") @Nonnull User user,
+            @JsonProperty("user_id") @Nonnull User user,
             @JsonProperty("course") @Nonnull Course course,
             @JsonProperty("batch") @Nonnull String batch,
             @JsonProperty("current_semester") @Nonnull int currentSemester) {

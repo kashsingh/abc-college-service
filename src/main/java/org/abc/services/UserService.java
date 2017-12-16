@@ -8,9 +8,11 @@ import org.springframework.stereotype.Service;
 
 public interface UserService {
 
-    User findUserByEmail(String username);
+    User findUserByEmail(String email);
 
     void updateUser(User user) throws NotFoundException;
 
+    void createUser(User user);
 
+    User getUser(int userId) throws NotFoundException;
 }

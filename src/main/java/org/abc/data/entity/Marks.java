@@ -20,13 +20,13 @@ public class Marks {
     private Integer id;
 
     @Nonnull
-    @JsonProperty("studentId")
+    @JsonProperty("student_id")
     @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "student_id")
     private Student student;
 
     @Nonnull
-    @JsonProperty("subjectId")
+    @JsonProperty("subject_id")
     @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "subject_id")
     private Subject subject;
@@ -42,8 +42,8 @@ public class Marks {
 
     public Marks(
             @JsonProperty("id") @Nullable Integer id,
-            @JsonProperty("studentId") @Nonnull Student student,
-            @JsonProperty("subjectId") @Nonnull Subject subject,
+            @JsonProperty("student_id") @Nonnull Student student,
+            @JsonProperty("subject_id") @Nonnull Subject subject,
             @JsonProperty("semester") int semester,
             @JsonProperty("marks") float marks) {
         this.id = id;

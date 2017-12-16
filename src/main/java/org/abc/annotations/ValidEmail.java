@@ -1,6 +1,6 @@
 package org.abc.annotations;
 
-import org.abc.validator.EmailValidator;
+import org.abc.utils.EmailValidator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;

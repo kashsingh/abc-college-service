@@ -5,14 +5,13 @@ import org.abc.data.entity.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
 
 public class SecurityUser extends User implements UserDetails {
-
-    private static final long serialVersionUID = 1L;
 
     public SecurityUser(User user) {
         if (user != null) {

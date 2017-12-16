@@ -19,7 +19,7 @@ public class Admin {
     private Integer id;
 
     @Nonnull
-    @JsonProperty("userId")
+    @JsonProperty("user_id")
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     private User user;
@@ -29,7 +29,7 @@ public class Admin {
 
     public Admin(
             @JsonProperty("id") Integer id,
-            @JsonProperty("userId") @Nonnull User user) {
+            @JsonProperty("user_id") @Nonnull User user) {
         this.id = id;
         this.user = user;
     }

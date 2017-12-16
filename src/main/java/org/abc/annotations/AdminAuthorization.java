@@ -12,6 +12,6 @@ import java.lang.annotation.Target;
 @Target({ ElementType.METHOD, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
-@PreAuthorize("hasRole(T(org.abc.data.entity.Role).ADMIN)")
+@PreAuthorize("hasRole(ADMIN)")
 public @interface AdminAuthorization {
 }

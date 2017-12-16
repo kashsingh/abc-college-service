@@ -33,9 +33,9 @@ public class User {
     private String password;
 
     @Nonnull
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE) //fetch = FetchType.EAGER
     @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Set<Role> roles = new HashSet<>();
+    private Set<Role> roles;
 
     @Nonnull
     @Column(name = "phone", columnDefinition = "VARCHAR(11)", nullable = false)
@@ -45,7 +45,7 @@ public class User {
     @Column(name = "gender", columnDefinition = "CHAR(1)", nullable = false)
     private char gender;
 
-    private boolean enabled;
+    private boolean enabled = true;
 
     public User() {
     }
@@ -57,7 +57,7 @@ public class User {
             @JsonProperty("password") @Nonnull String password,
             @JsonProperty("roles") @Nonnull Set<Role> roles,
             @JsonProperty("phone") @Nonnull String phone,
-            @JsonProperty("gender") @Nonnull char gender, boolean enabled) {
+            @JsonProperty("gender") @Nonnull char gender) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -65,7 +65,6 @@ public class User {
         this.roles = roles;
         this.phone = phone;
         this.gender = gender;
-        this.enabled = enabled;
     }
 
     @Nonnull
@@ -74,5 +73,9 @@ public class User {
         return password;
     }
 
-
+    @Nonnull
+    @JsonIgnore
+    public Set<Role> getRoles() {
+        return roles;
+    }
 }

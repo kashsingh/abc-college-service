@@ -4,6 +4,7 @@ import org.abc.data.entity.User;
 import org.abc.services.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
@@ -13,6 +14,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.cors.CorsConfiguration;
 
 import static org.abc.config.SecurityConstants.*;
@@ -52,7 +55,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.cors().configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues())
                 .and().csrf().disable()
                 .authorizeRequests()
-                .antMatchers(HttpMethod.GET, SIGN_UP_URL).permitAll()
+                .antMatchers(HttpMethod.POST, SIGN_UP_URL).permitAll()
                 .antMatchers("/student/**").hasRole("USER")
                 .antMatchers("/admin/**").hasRole("ADMIN")
                 .and()
@@ -61,7 +64,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Override
+    @Transactional
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(customUserDetailService).passwordEncoder(new BCryptPasswordEncoder());
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        PasswordEncoder encoder = new BCryptPasswordEncoder();
+        return encoder;
     }
 }
