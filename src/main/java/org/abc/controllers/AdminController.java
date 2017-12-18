@@ -1,11 +1,15 @@
 package org.abc.controllers;
 
 import com.google.common.collect.ImmutableMap;
-import org.abc.data.DTO.StudentUser;
+import org.abc.annotations.AdminAuthorization;
+import org.abc.data.dto.EditDetails;
+import org.abc.data.dto.StudentUser;
 import org.abc.data.entity.*;
+import org.abc.data.entity.security.User;
 import org.abc.exceptions.NotFoundException;
 import org.abc.services.AdminService;
 import org.abc.services.SubjectService;
+import org.abc.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -21,6 +25,7 @@ import java.util.ArrayList;
 
 @RestController
 @RequestMapping("/api/admin")
+@AdminAuthorization
 public class AdminController {
 
     @Nonnull
@@ -28,6 +33,14 @@ public class AdminController {
 
     @Nonnull
     private SubjectService subjectService;
+
+    @Nonnull
+    private UserService userService;
+
+    @Nonnull
+    public void setUserService(@Nonnull UserService userService) {
+        this.userService = userService;
+    }
 
     @Autowired
     public void setSubjectService(@Nonnull SubjectService subjectService) {
@@ -64,9 +77,9 @@ public class AdminController {
     }
 
     @RequestMapping(value = "/student/update", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> updateStudent(@RequestBody Student student) {
+    public ResponseEntity<Object> updateStudent(@RequestBody EditDetails editDetails) {
         try {
-            adminService.updateStudent(student);
+            userService.updateUser(editDetails);
             return new ResponseEntity<>(ImmutableMap.of("message", "Student Record Updated"), HttpStatus.OK);
         } catch (NotFoundException e) {
             System.out.println(e);
@@ -80,7 +93,7 @@ public class AdminController {
     @RequestMapping(value = "student/{student_id}/delete", method = RequestMethod.DELETE)
     public ResponseEntity<Object> deleteStudent(@PathVariable("student_id") int studentId) {
         try {
-            adminService.deleteStudent(adminService.getStudent(studentId));
+            adminService.deleteStudent(studentId);
             return new ResponseEntity<>(ImmutableMap.of("message", "Student Deleted"), HttpStatus.OK);
         } catch (NotFoundException e) {
             System.out.println(e);

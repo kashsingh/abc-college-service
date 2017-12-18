@@ -1,5 +1,6 @@
 package org.abc.services;
 
+import org.abc.data.dto.StudentUser;
 import org.abc.data.entity.Marks;
 import org.abc.data.entity.Student;
 import org.abc.data.entity.Subject;
@@ -8,10 +9,12 @@ import org.abc.data.repository.StudentRepository;
 import org.abc.data.repository.SubjectRepository;
 import org.abc.exceptions.BadRequestException;
 import org.abc.exceptions.NotFoundException;
+import org.abc.security.models.JwtUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Nonnull;
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +29,15 @@ public class StudentServiceImpl implements StudentService {
 
     @Nonnull
     private SubjectRepository subjectRepository;
+
+    @Nonnull
+    private UserService userService;
+
+    @Autowired
+    public void setUserService(@Nonnull UserService userService) {
+        this.userService = userService;
+    }
+
 
     @Autowired
     public void setStudentRepository(@Nonnull StudentRepository studentRepository) {
@@ -45,18 +57,32 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     @Nonnull
-    public Student getStudent(int studentId) throws NotFoundException {
-        Student student = studentRepository.findStudentById(studentId);
+    public StudentUser getStudent(HttpServletRequest request) throws NotFoundException {
+        JwtUser user = userService.getLoggedUser(request);
+        Student student = studentRepository.findByUserId(user.getId());
         if (student == null) {
-            throw new NotFoundException(String.format("Student with id %s not found", studentId));
+            throw new NotFoundException(String.format("Student with username %s not found", user.getUsername()));
         }
-        return student;
+
+        StudentUser studentUser = new StudentUser(
+                                                    user.getUsername(),
+                                                    user.getPassword(),
+                                                    user.getFirstname(),
+                                                    user.getLastname(),
+                                                    user.getEmail(),
+                                                    student.getCourse(),
+                                                    student.getBatch(),
+                                                    student.getCurrentSemester());
+
+        return studentUser;
     }
 
 
     @Override
-    public void enrollSemester(Student student, List<Subject> subjects) throws BadRequestException, NotFoundException {
-        if (studentRepository.findStudentById(student.getId()) == null) {
+    public void enrollSemester(HttpServletRequest request, List<Subject> subjects) throws BadRequestException, NotFoundException {
+        JwtUser user = userService.getLoggedUser(request);
+        Student student = studentRepository.findByUserId(user.getId());
+        if (student == null) {
             throw new NotFoundException("Student not found!");
 
         } else {

@@ -3,6 +3,7 @@ package org.abc.data.entity;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import org.abc.data.entity.security.User;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

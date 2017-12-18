@@ -1,10 +1,10 @@
 package org.abc.services;
 
-import org.abc.data.DTO.StudentUser;
+import org.abc.data.dto.EditDetails;
+import org.abc.data.dto.StudentUser;
 import org.abc.data.entity.*;
 import org.abc.exceptions.NotFoundException;
 import org.apache.commons.lang3.tuple.Pair;
-import org.aspectj.weaver.ast.Not;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -14,11 +14,9 @@ public interface AdminService {
     void createStudentUser(StudentUser studentUser);
 
     @Nonnull
-    Student getStudent(int studentId) throws NotFoundException;
+    StudentUser getStudent(int studentId) throws NotFoundException;
 
-    void updateStudent(Student student) throws NotFoundException;
-
-    void deleteStudent(Student student) throws NotFoundException;
+    void deleteStudent(int studentId) throws NotFoundException;
 
     void assignStudentMarks(int studentID, List<Marks> marks) throws NotFoundException;
 

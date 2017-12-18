@@ -1,13 +1,15 @@
 package org.abc.data.repository;
 
-import org.abc.data.entity.User;
+import org.abc.data.entity.security.User;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
 
-public interface UserRepository extends JpaRepository<User, Integer> {
+import javax.annotation.Nonnull;
 
-    User findUserByEmail(String email);
+public interface UserRepository extends JpaRepository<User, Long> {
 
-    User findUserById(Integer id);
+
+    User findByUsername(String username);
 
 }
+

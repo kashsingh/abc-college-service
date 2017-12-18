@@ -1,18 +1,25 @@
 package org.abc.services;
 
 
-import org.abc.data.DTO.StudentUser;
+import org.abc.data.dto.EditDetails;
+import org.abc.data.dto.StudentUser;
 import org.abc.data.entity.*;
-import org.abc.data.repository.MarksRepository;
-import org.abc.data.repository.StudentRepository;
-import org.abc.data.repository.SubjectRepository;
-import org.abc.data.repository.UserRepository;
+import org.abc.data.entity.security.Authority;
+import org.abc.data.entity.security.AuthorityName;
+import org.abc.data.entity.security.User;
+import org.abc.data.repository.*;
 import org.abc.exceptions.NotFoundException;
+import org.abc.utils.TimeProvider;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import javax.annotation.Nonnull;
+import javax.jws.soap.SOAPBinding;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -29,6 +36,14 @@ public class AdminServiceImpl implements AdminService {
 
     @Nonnull
     private MarksRepository marksRepository;
+
+    @Nonnull
+    private AuthorityRepository authorityRepository;
+
+    @Autowired
+    public void setAuthorityRepository(@Nonnull AuthorityRepository authorityRepository) {
+        this.authorityRepository = authorityRepository;
+    }
 
     @Autowired
     public void setUserRepository(@Nonnull UserRepository userRepository) {
@@ -52,52 +67,66 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public void createStudentUser(StudentUser studentUser) {
-        User user = studentUser.getUser();
-        userRepository.save(user);
+        Authority authority = authorityRepository.findByName(AuthorityName.ROLE_USER);
+        List<Authority> authorities = Arrays.asList(authority);
 
+        User newUser = new User();
+        newUser.setId(null);
+        newUser.setUsername(studentUser.getUsername());
+        newUser.setPassword(new BCryptPasswordEncoder().encode(studentUser.getPassword()));
+        newUser.setFirstname(studentUser.getFirstname());
+        newUser.setLastname(studentUser.getLastname());
+        newUser.setEmail(studentUser.getEmail());
+        newUser.setEnabled(true);
+        newUser.setLastPasswordResetDate(new TimeProvider().now());
+        newUser.setAuthorities(authorities);
 
-        user = userRepository.findUserByEmail(user.getEmail());
-        System.out.print(user);
+        userRepository.save(newUser);
+        newUser = userRepository.findByUsername(studentUser.getUsername());
+
         Student student = new Student();    //null, user, studentUser.getCourse(), studentUser.getBatch(), 0
         student.setId(null);
-        student.setUser(user);
+        student.setUser(newUser);
         student.setCourse(studentUser.getCourse());
         student.setBatch(studentUser.getBatch());
         student.setCurrentSemester(0);
+
         studentRepository.save(student);
     }
 
     @Nonnull
     @Override
-    public Student getStudent(int studentId) throws NotFoundException {
+    public StudentUser getStudent(int studentId) throws NotFoundException {
         Student student = studentRepository.findStudentById(studentId);
         if (student == null) {
             throw new NotFoundException(String.format("Student with id %s not found", studentId));
         }
-        return student;
+        User user = student.getUser();
+        StudentUser studentUser = new StudentUser(user.getUsername(),
+                user.getPassword(),
+                user.getFirstname(),
+                user.getLastname(),
+                user.getEmail(),
+                student.getCourse(),
+                student.getBatch(),
+                student.getCurrentSemester());
+
+        return studentUser;
     }
 
     @Override
-    public void updateStudent(Student student) throws NotFoundException {
-        Student existingStudent = studentRepository.findStudentById(student.getId());
+    public void deleteStudent(int studentId) throws NotFoundException {
+        Student existingStudent = studentRepository.findStudentById(studentId);
         if (existingStudent == null) {
             throw new NotFoundException("Student not found!!");
         } else {
-            student.setBatch(existingStudent.getBatch());
-            student.setCurrentSemester(existingStudent.getCurrentSemester());
-            studentRepository.save(student);
-        }
-    }
+            User user = existingStudent.getUser();
+            user.setEnabled(false);
+            userRepository.save(user);    //This disables the user.
 
-    @Override
-    public void deleteStudent(Student student) throws NotFoundException {
-        Student existingStudent = studentRepository.findStudentById(student.getId());
-        if (existingStudent == null) {
-            throw new NotFoundException("Student not found!!");
-        } else {
-            List<Marks> studentMarks = marksRepository.findMarksByStudentId(student.getId());
+            List<Marks> studentMarks = marksRepository.findMarksByStudentId(studentId);
             marksRepository.delete(studentMarks);
-            studentRepository.delete(student);
+            studentRepository.delete(existingStudent);
         }
     }
 

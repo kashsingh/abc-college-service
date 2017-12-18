@@ -1,72 +1,61 @@
 package org.abc.services;
 
-import org.abc.data.entity.Role;
-import org.abc.data.entity.User;
-import org.abc.data.repository.RoleRepository;
+import org.abc.data.dto.EditDetails;
+import org.abc.data.entity.security.User;
 import org.abc.data.repository.UserRepository;
 import org.abc.exceptions.NotFoundException;
+import org.abc.security.JwtTokenUtil;
+import org.abc.security.models.JwtUser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Nonnull;
-import java.util.HashSet;
-import java.util.Set;
+import javax.servlet.http.HttpServletRequest;
 
 @Service
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl implements UserService{
+
+    @Autowired
+    private UserDetailsService userDetailsService;
+
+    @Value("${jwt.token.header}")
+    private String tokenHeader;
+
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
 
     @Nonnull
     private UserRepository userRepository;
 
-    @Nonnull
-    private RoleRepository roleRepository;
-
     @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    public void setRoleRepository(@Nonnull RoleRepository roleRepository) {
-        this.roleRepository = roleRepository;
-    }
-
-    @Autowired
-    public void setUserRepository(UserRepository userRepository) {
+    public void setUserRepository(@Nonnull UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
-    @Override
-    @Transactional
-    public User findUserByEmail(String email) {
-        return userRepository.findUserByEmail(email);
-    }
+    public void updateUser(EditDetails editDetails) throws NotFoundException {
 
-    @Override
-    public void updateUser(User user) throws NotFoundException {
-        if (userRepository.findUserByEmail(user.getEmail()) == null) {
-            throw new NotFoundException("User not found");
+        User existingUser = userRepository.findByUsername(editDetails.getUsername());
+
+        if (existingUser == null) {
+            throw new NotFoundException("User not found!!");
+        } else {
+            existingUser.setPassword(editDetails.getPassword());
+            existingUser.setFirstname(editDetails.getFirstname());
+            existingUser.setLastname(editDetails.getLastname());
+            existingUser.setEmail(editDetails.getEmail());
+            userRepository.save(existingUser);
         }
-        userRepository.save(user);
     }
 
     @Override
-    public void createUser(User user) {
-//        Set<Role> adminRoles = new HashSet<>();
-//        adminRoles.add(roleRepository.findRoleByRoleName("ROLE_ADMIN"));
-//        adminRoles.add(roleRepository.findRoleByRoleName("ROLE_USER"));
-//        user.setRoles(adminRoles);
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userRepository.save(user);
-    }
-
-    @Override
-    @Transactional
-    public User getUser(int userId) throws NotFoundException {
-        User user = userRepository.findUserById(userId);
-        if (user == null) {
-            throw new NotFoundException("User not found!");
-        }
+    public JwtUser getLoggedUser(HttpServletRequest request) throws NotFoundException {
+        String token = request.getHeader(tokenHeader).substring(7);
+        String username = jwtTokenUtil.getUsernameFromToken(token);
+        JwtUser user = (JwtUser) userDetailsService.loadUserByUsername(username);
         return user;
     }
+
+
 }
