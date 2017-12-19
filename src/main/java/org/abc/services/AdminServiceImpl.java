@@ -40,6 +40,14 @@ public class AdminServiceImpl implements AdminService {
     @Nonnull
     private AuthorityRepository authorityRepository;
 
+    @Nonnull
+    private UserService userService;
+
+    @Autowired
+    public void setUserService(@Nonnull UserService userService) {
+        this.userService = userService;
+    }
+
     @Autowired
     public void setAuthorityRepository(@Nonnull AuthorityRepository authorityRepository) {
         this.authorityRepository = authorityRepository;
@@ -92,6 +100,13 @@ public class AdminServiceImpl implements AdminService {
         student.setCurrentSemester(0);
 
         studentRepository.save(student);
+    }
+
+    @Override
+    public void updateStudentDetails(int studentId, EditDetails editDetails) throws NotFoundException {
+        Student student = studentRepository.findStudentById(studentId);
+        if(student == null){ throw new NotFoundException("Student not found"); }
+        userService.updateUser(student.getUser().getId(), editDetails);
     }
 
     @Nonnull

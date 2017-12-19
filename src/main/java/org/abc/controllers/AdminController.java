@@ -76,10 +76,10 @@ public class AdminController {
         }
     }
 
-    @RequestMapping(value = "/student/update", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> updateStudent(@RequestBody EditDetails editDetails) {
+    @RequestMapping(value = "/student/{student_id}/update", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Object> updateStudent(@PathVariable("student_id") int studentId, @RequestBody EditDetails editDetails) {
         try {
-            userService.updateUser(editDetails);
+            adminService.updateStudentDetails(studentId, editDetails);
             return new ResponseEntity<>(ImmutableMap.of("message", "Student Record Updated"), HttpStatus.OK);
         } catch (NotFoundException e) {
             System.out.println(e);

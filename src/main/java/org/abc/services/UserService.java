@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 
 public interface UserService {
 
-    void updateUser(EditDetails editDetails) throws NotFoundException;
+    void updateUser(long userId, EditDetails editDetails) throws NotFoundException;
 
     JwtUser getLoggedUser(HttpServletRequest request) throws NotFoundException;
 

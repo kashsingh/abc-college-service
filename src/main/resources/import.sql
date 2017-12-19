@@ -9,3 +9,14 @@ INSERT INTO user_authority (USER_ID, AUTHORITY_ID) VALUES (1, 1);
 INSERT INTO user_authority (USER_ID, AUTHORITY_ID) VALUES (1, 2);
 INSERT INTO user_authority (USER_ID, AUTHORITY_ID) VALUES (2, 1);
 INSERT INTO user_authority (USER_ID, AUTHORITY_ID) VALUES (3, 1);
+
+INSERT INTO subject (id, course_id, subject_name) VALUES (null, 0, "Strength Of Materials");
+INSERT INTO subject (id, course_id, subject_name) VALUES (null, 0, "Engineering Design");
+INSERT INTO subject (id, course_id, subject_name) VALUES (null, 0, "Hydraulics");
+INSERT INTO subject (id, course_id, subject_name) VALUES (null, 0, "Aerodynamics");
+INSERT INTO subject (id, course_id, subject_name) VALUES (null, 0, "Thermodynamics");
+INSERT INTO subject (id, course_id, subject_name) VALUES (null, 0, "");
+
+
+
+

@@ -21,7 +21,7 @@ public class StudentUser {
     }
 
     public StudentUser(
-            @JsonProperty("username")String username,
+            @JsonProperty("username") String username,
             @JsonProperty("password") String password,
             @JsonProperty("firstname") String firstname,
             @JsonProperty("lastname") String lastname,
@@ -39,14 +39,14 @@ public class StudentUser {
     }
 
     public StudentUser(
-            @JsonProperty("username")String username,
-            @JsonProperty("password") String password,
-            @JsonProperty("firstname") String firstname,
-            @JsonProperty("lastname") String lastname,
-            @JsonProperty("email") String email,
-            @JsonProperty("course") Course course,
-            @JsonProperty("batch") String batch,
-            @JsonProperty("current_semester") int currentSemester) {
+            String username,
+            String password,
+            String firstname,
+            String lastname,
+            String email,
+            Course course,
+            String batch,
+            int currentSemester) {
         this.username = username;
         this.password = password;
         this.firstname = firstname;

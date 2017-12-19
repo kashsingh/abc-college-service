@@ -13,6 +13,8 @@ public interface AdminService {
 
     void createStudentUser(StudentUser studentUser);
 
+    void updateStudentDetails(int studentId, EditDetails editDetails) throws NotFoundException;
+
     @Nonnull
     StudentUser getStudent(int studentId) throws NotFoundException;
 
