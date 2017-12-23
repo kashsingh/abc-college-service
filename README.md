@@ -9,7 +9,7 @@ This demo is build with with Gradle 2.7.7 and Java 1.8.
 ## Usage
 The application will be running at [http://localhost:8080](http://localhost:8080) once started.
 
-There are three user accounts present to demonstrate the different levels of access to the endpoints in
+There are four user accounts present to demonstrate the different levels of access to the endpoints in
 the API and the different authorization exceptions:
 ```
 Admin - admin:admin
