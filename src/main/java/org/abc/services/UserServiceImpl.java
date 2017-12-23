@@ -1,7 +1,6 @@
 package org.abc.services;
 
-import com.sun.org.apache.xerces.internal.util.SynchronizedSymbolTable;
-import org.abc.data.dto.EditDetails;
+import org.abc.data.dto.EditUserDetails;
 import org.abc.data.entity.security.User;
 import org.abc.data.repository.UserRepository;
 import org.abc.exceptions.NotFoundException;
@@ -12,12 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Nonnull;
 import javax.servlet.http.HttpServletRequest;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 
 @Service
 public class UserServiceImpl implements UserService{
@@ -42,26 +40,34 @@ public class UserServiceImpl implements UserService{
         this.userRepository = userRepository;
     }
 
-    public void updateUser(long userId, EditDetails editDetails) throws NotFoundException {
+    public void updateUser(long userId, EditUserDetails editUserDetails) throws NotFoundException {
 
         User existingUser = userRepository.findUserById(userId);
 
         if (existingUser == null) {
             throw new NotFoundException("User not found!!");
         }
-        editDetails.setPassword(new BCryptPasswordEncoder().encode(existingUser.getPassword()));
-        existingUser.setPassword(editDetails.getPassword());
+
+        // Get a new password encoder and encode the new password.
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        editUserDetails.setPassword(passwordEncoder.encode(existingUser.getPassword()));
+
+        // Update the existingUser details and save it.
+        existingUser.setPassword(editUserDetails.getPassword());
         existingUser.setLastPasswordResetDate(timeProvider.now());
-        existingUser.setFirstname(editDetails.getFirstname());
-        existingUser.setLastname(editDetails.getLastname());
-        existingUser.setEmail(editDetails.getEmail());
+        existingUser.setFirstname(editUserDetails.getFirstname());
+        existingUser.setLastname(editUserDetails.getLastname());
+        existingUser.setEmail(editUserDetails.getEmail());
         userRepository.save(existingUser);
 
     }
 
     @Override
     public JwtUser getLoggedUser(HttpServletRequest request) throws NotFoundException {
+
+        // Get token header from the request.
         String token = request.getHeader(tokenHeader).substring(7);
+        // Get username from the token.
         String username = jwtTokenUtil.getUsernameFromToken(token);
         JwtUser user = (JwtUser) userDetailsService.loadUserByUsername(username);
         return user;

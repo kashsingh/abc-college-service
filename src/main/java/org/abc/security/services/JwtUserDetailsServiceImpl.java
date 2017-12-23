@@ -1,9 +1,7 @@
 package org.abc.security.services;
 
-import org.abc.data.dto.EditDetails;
 import org.abc.data.entity.security.User;
 import org.abc.data.repository.UserRepository;
-import org.abc.exceptions.NotFoundException;
 import org.abc.security.models.factory.JwtUserFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;

@@ -2,20 +2,17 @@ package org.abc.controllers;
 
 import com.google.common.collect.ImmutableMap;
 import org.abc.annotations.UserAuthorization;
-import org.abc.data.dto.EditDetails;
+import org.abc.data.dto.EditUserDetails;
 import org.abc.data.entity.Subject;
 import org.abc.exceptions.BadRequestException;
 import org.abc.exceptions.NotFoundException;
-import org.abc.security.JwtTokenUtil;
 import org.abc.security.models.JwtUser;
 import org.abc.services.StudentService;
 import org.abc.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -61,10 +58,10 @@ public class StudentController {
     }
 
     @RequestMapping(value = "/update", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> updateStudent(HttpServletRequest request, @RequestBody EditDetails editDetails) {
+    public ResponseEntity<Object> updateStudent(HttpServletRequest request, @RequestBody EditUserDetails editUserDetails) {
         try {
             JwtUser user = userService.getLoggedUser(request);
-            userService.updateUser(user.getId(), editDetails);
+            userService.updateUser(user.getId(), editUserDetails);
             return new ResponseEntity<>(ImmutableMap.of("message", "User Record Updated"), HttpStatus.OK);
 
         } catch (Exception e) {
@@ -73,10 +70,11 @@ public class StudentController {
         }
     }
 
-    @RequestMapping(value = "/{student_id}/view-result/semester/{semester}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> viewResult(@PathVariable("student_id") int studentId, @PathVariable("semester") int semester) {
+    @RequestMapping(value = "/view-result/semester/{semester}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Object> viewResult(HttpServletRequest request, @PathVariable("semester") int semester) {
         try {
-            return new ResponseEntity<>(studentService.viewSemesterResult(studentId, semester), HttpStatus.OK);
+            JwtUser user = userService.getLoggedUser(request);
+            return new ResponseEntity<>(studentService.viewSemesterResult(request, semester), HttpStatus.OK);
         } catch (NotFoundException e) {
             e.printStackTrace();
             return new ResponseEntity<>(ImmutableMap.of("message", e.getMessage()), null, HttpStatus.NOT_FOUND);
@@ -86,7 +84,7 @@ public class StudentController {
         }
     }
 
-    @RequestMapping(value = "/{studentId}/enroll-semester", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/enroll-semester", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> enrollSemester(HttpServletRequest request, @RequestBody ArrayList<Subject> subjects) {
         try {
             studentService.enrollSemester(request, subjects);

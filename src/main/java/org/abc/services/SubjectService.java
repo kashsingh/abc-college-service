@@ -6,6 +6,7 @@ import org.abc.exceptions.NotFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Nonnull;
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 public interface SubjectService {
@@ -20,5 +21,7 @@ public interface SubjectService {
     void deleteSubject(Subject subject) throws NotFoundException;
 
     Subject getSubject(int subjectId) throws NotFoundException;
+
+    List<Subject> getStudentEnrolledSubjects(int studentId);
 
 }

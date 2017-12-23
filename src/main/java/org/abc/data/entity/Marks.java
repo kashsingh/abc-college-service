@@ -14,19 +14,16 @@ import javax.persistence.*;
 public class Marks {
 
     @Nullable
-    @JsonProperty("id")
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
     @Nonnull
-    @JsonProperty("student_id")
     @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "student_id")
     private Student student;
 
     @Nonnull
-    @JsonProperty("subject_id")
     @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "subject_id")
     private Subject subject;

@@ -2,24 +2,45 @@ package org.abc.services;
 
 import org.abc.data.entity.Course;
 import org.abc.data.entity.Marks;
+import org.abc.data.entity.Student;
 import org.abc.data.entity.Subject;
 import org.abc.data.repository.MarksRepository;
+import org.abc.data.repository.StudentRepository;
 import org.abc.data.repository.SubjectRepository;
 import org.abc.exceptions.NotFoundException;
+import org.abc.security.models.JwtUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Nonnull;
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class SubjectServiceImpl implements SubjectService {
 
     @Nonnull
+    private StudentRepository studentRepository;
+
+    @Nonnull
     private SubjectRepository subjectRepository;
 
     @Nonnull
     private MarksRepository marksRepository;
+
+    @Nonnull
+    private UserService userService;
+
+    @Autowired
+    public void setStudentRepository(@Nonnull StudentRepository studentRepository) {
+        this.studentRepository = studentRepository;
+    }
+
+    @Autowired
+    public void setUserService(@Nonnull UserService userService) {
+        this.userService = userService;
+    }
 
     @Autowired
     public void setMarksRepository(@Nonnull MarksRepository marksRepository) {
@@ -70,10 +91,29 @@ public class SubjectServiceImpl implements SubjectService {
     @Nonnull
     @Override
     public List<Subject> viewCourseSubjects(Course course) throws NotFoundException {
+
+        //Gets a list of all the subjects of a particular course.
         List<Subject> allCourseSubject = subjectRepository.findSubjectsByCourse(course);
         if (allCourseSubject == null){
             throw new NotFoundException("No subjects found for the course");
         }
         return allCourseSubject;
+    }
+
+    @Nonnull
+    public List<Subject> getStudentEnrolledSubjects(int studentId) {
+
+        List<Marks> studentMarks = marksRepository.findMarksByStudentId(studentId);
+        List<Subject> studentEnrolledSubjects = new ArrayList<>();
+
+        if (studentMarks == null) {
+            return null;
+        }
+
+        for (Marks mark : studentMarks) {
+            studentEnrolledSubjects.add(mark.getSubject());
+        }
+
+        return studentEnrolledSubjects;
     }
 }

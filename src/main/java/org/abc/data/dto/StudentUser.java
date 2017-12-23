@@ -5,9 +5,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import org.abc.data.entity.Course;
 
+import javax.annotation.Nullable;
+
 @Data
 public class StudentUser {
 
+    @Nullable
+    private int studentId;
     private String username;
     private String password;
     private String firstname;
@@ -21,6 +25,7 @@ public class StudentUser {
     }
 
     public StudentUser(
+            @JsonProperty("student_id") int studentId,
             @JsonProperty("username") String username,
             @JsonProperty("password") String password,
             @JsonProperty("firstname") String firstname,
@@ -28,6 +33,7 @@ public class StudentUser {
             @JsonProperty("email") String email,
             @JsonProperty("course") Course course,
             @JsonProperty("batch") String batch) {
+        this.studentId = studentId;
         this.username = username;
         this.password = password;
         this.firstname = firstname;
@@ -39,16 +45,17 @@ public class StudentUser {
     }
 
     public StudentUser(
+            int studentId,
             String username,
-            String password,
             String firstname,
             String lastname,
             String email,
             Course course,
             String batch,
             int currentSemester) {
+        this.studentId = studentId;
         this.username = username;
-        this.password = password;
+        this.password = null;
         this.firstname = firstname;
         this.lastname = lastname;
         this.email = email;

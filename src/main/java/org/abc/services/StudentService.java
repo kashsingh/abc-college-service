@@ -1,5 +1,6 @@
 package org.abc.services;
 
+import org.abc.data.dto.MarksDetails;
 import org.abc.data.dto.StudentUser;
 import org.abc.data.entity.Marks;
 import org.abc.data.entity.Student;
@@ -19,6 +20,6 @@ public interface StudentService {
     void enrollSemester(HttpServletRequest request, List<Subject> subjects) throws BadRequestException, NotFoundException;
 
     @Nonnull
-    List<Marks> viewSemesterResult(int studentId, int semester) throws NotFoundException;
+    List<MarksDetails> viewSemesterResult(HttpServletRequest request, int semester) throws NotFoundException;
 
 }

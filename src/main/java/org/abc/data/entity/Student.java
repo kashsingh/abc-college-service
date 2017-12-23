@@ -48,6 +48,7 @@ public class Student {
             @JsonProperty("batch") @Nonnull String batch,
             @JsonProperty("current_semester") @Nonnull int currentSemester) {
         this.id = id;
+        this.user = user;
         this.course = course;
         this.batch = batch;
         this.currentSemester = currentSemester;
