@@ -28,6 +28,9 @@ There are three endpoints that can be accessed by the users:
 
 I'm using [bcrypt](https://en.wikipedia.org/wiki/Bcrypt) to encode passwords. Your can generate your hashes with this simple tool: [Bcrypt Generator](https://www.bcrypt-generator.com)
 
+###### Note: I haven't developed the front-end for the application yet but will provide a link to its repository once I complete them.
+
+
 ## Copyright and license
 
 The code is released under the [MIT license](LICENSE?raw=true).
