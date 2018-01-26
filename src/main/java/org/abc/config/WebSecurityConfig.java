@@ -16,8 +16,10 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 
 import javax.annotation.Nonnull;
+import java.util.Arrays;
 
 @SuppressWarnings("SpringJavaAutowiringInspection")
 @Configuration
@@ -60,21 +62,20 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 
                 .authorizeRequests()
-                //.antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                    .antMatchers(HttpMethod.OPTIONS, "**").permitAll()
 
-                // allow anonymous resource requests
-                .antMatchers(
-                        HttpMethod.GET,
-                        "/",
-                        "/*.html",
-                        "/favicon.ico",
-                        "/**/*.html",
-                        "/**/*.css",
-                        "/**/*.js"
-                ).permitAll()
-                .antMatchers("/auth/**").permitAll()
-                //.antMatchers("/api/admin/**").permitAll()
-                .anyRequest().authenticated();
+                    // allow anonymous resource requests
+                    .antMatchers(
+                            HttpMethod.GET,
+                            "/",
+                            "/*.html",
+                            "/favicon.ico",
+                            "/**/*.html",
+                            "/**/*.css",
+                            "/**/*.js"
+                    ).permitAll()
+                    .antMatchers("/auth/**").permitAll()
+                    .anyRequest().authenticated();
 
         // Custom JWT based security filter
         httpSecurity
@@ -83,4 +84,5 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         // disable page caching
         httpSecurity.headers().cacheControl();
     }
+
 }

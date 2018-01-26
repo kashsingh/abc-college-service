@@ -7,7 +7,7 @@ import lombok.Data;
 import javax.annotation.Nonnull;
 
 @Data
-public class EditUserDetails {
+public class ApplicationUser {
 
     @Nonnull
     private String username;
@@ -24,20 +24,30 @@ public class EditUserDetails {
     @Nonnull
     private String email;
 
-    public EditUserDetails() {
+    @Nonnull
+    private String token;
+
+    @Nonnull
+    private boolean isAdmin;
+
+    public ApplicationUser() {
     }
 
-    public EditUserDetails(
+    public ApplicationUser(
             @JsonProperty("username")String username,
             @JsonProperty("password") String password,
             @JsonProperty("firstname") String firstname,
             @JsonProperty("lastname") String lastname,
-            @JsonProperty("email") String email) {
+            @JsonProperty("email") String email,
+            @JsonProperty("token") String token,
+            @JsonProperty("isAdmin") boolean isAdmin) {
         this.username = username;
         this.password = password;
         this.firstname = firstname;
         this.lastname = lastname;
         this.email = email;
+        this.token = token;
+        this.isAdmin = isAdmin;
     }
 
     @JsonIgnore

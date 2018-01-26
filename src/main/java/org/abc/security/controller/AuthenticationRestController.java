@@ -1,5 +1,6 @@
 package org.abc.security.controller;
 
+import org.abc.data.dto.ApplicationUser;
 import org.abc.security.JwtTokenUtil;
 import org.abc.security.models.JwtUser;
 import org.abc.security.models.json.JwtAuthenticationRequest;
@@ -12,15 +13,16 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestWrapper;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Collection;
 
 @RestController
 public class AuthenticationRestController {
@@ -37,6 +39,7 @@ public class AuthenticationRestController {
     @Autowired
     private UserDetailsService userDetailsService;
 
+    @CrossOrigin(origins = "http//localhost:4200")
     @RequestMapping(value = "${jwt.route.authentication.path}", method = RequestMethod.POST)
     public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtAuthenticationRequest authenticationRequest, Device device) throws AuthenticationException {
 
@@ -53,8 +56,21 @@ public class AuthenticationRestController {
         final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
         final String token = jwtTokenUtil.generateToken(userDetails, device);
 
-        // Return the token
-        return ResponseEntity.ok(new JwtAuthenticationResponse(token));
+        JwtUser user = (JwtUser) userDetails;
+        ApplicationUser loggedUser = new ApplicationUser();
+        loggedUser.setFirstname(user.getFirstname());
+        loggedUser.setLastname(user.getLastname());
+        loggedUser.setEmail(user.getEmail());
+        loggedUser.setUsername(user.getUsername());
+        loggedUser.setPassword(user.getPassword());
+        loggedUser.setToken(token);
+
+        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+        boolean isAdmin = authorities.contains(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        loggedUser.setAdmin(isAdmin);
+
+        // Return the user details with token
+        return ResponseEntity.ok(loggedUser);
     }
 
     @RequestMapping(value = "${jwt.route.authentication.refresh}", method = RequestMethod.GET)
