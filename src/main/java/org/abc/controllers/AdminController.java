@@ -147,7 +147,7 @@ public class AdminController {
         }
     }
 
-    @RequestMapping(value = "/subject/update", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "subject/update", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> updateSubject(@RequestBody Subject subject) {
         try {
             subjectService.updateSubject(subject);
@@ -164,7 +164,7 @@ public class AdminController {
     @RequestMapping(value = "subject/{subject_id}/delete", method = RequestMethod.DELETE)
     public ResponseEntity<Object> deleteSubject(@PathVariable("subject_id") int subjectId) {
         try {
-            subjectService.deleteSubject(subjectService.getSubject(subjectId));
+            subjectService.deleteSubject(subjectService.getAllSubjects(subjectId));
             return new ResponseEntity<>(ImmutableMap.of("message", "Subject Deleted"), HttpStatus.OK);
         } catch (NotFoundException e) {
             System.out.println(e);
@@ -175,7 +175,7 @@ public class AdminController {
         }
     }
 
-    @RequestMapping(value = "/report/course/{course}/batch/{batch}/topper", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "report/course/{course}/batch/{batch}/topper", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> getClassTopper(@PathVariable("course") Course course, @PathVariable("batch") String batch) {
         try {
             return new ResponseEntity<>(adminService.getTopperStudentForBatch(course, batch), HttpStatus.OK);
@@ -188,7 +188,7 @@ public class AdminController {
         }
     }
 
-    @RequestMapping(value = "/report/course/{course}/scoring-subjects", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "report/course/{course}/scoring-subjects", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> getHighAndLowScoringSubjects(@PathVariable("course") Course course) {
         try {
             return new ResponseEntity<>(adminService.getHighestAndLowestScoreSubjects(course), HttpStatus.OK);
@@ -210,6 +210,20 @@ public class AdminController {
             return new ResponseEntity<>(ImmutableMap.of("message", e.getMessage()), null, HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             System.out.println(e);
+            return new ResponseEntity<>(ImmutableMap.of("message", "Internal Server Error"), null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @RequestMapping(value = "student/{student_id}/semester/{semester}/enrolled-subjects", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Object> getStudentEnrolledSubjects(@PathVariable("student_id") int studentId,
+                                                             @PathVariable("semester") int semester) {
+        try {
+            return new ResponseEntity<>(subjectService.getStudentEnrolledSubjectsForSemester(studentId, semester), HttpStatus.OK);
+        } catch (BadRequestException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(ImmutableMap.of("message", e.getMessage()), null, HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            e.printStackTrace();
             return new ResponseEntity<>(ImmutableMap.of("message", "Internal Server Error"), null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

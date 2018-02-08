@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface MarksRepository extends CrudRepository<Marks, Integer> {
 
-    List<Marks> findMarksByStudentIdAndSemester(Integer studentId, int semester);
+    List<Marks> findMarksByStudentIdAndSemester(Integer studentId, Integer semester);
 
     List<Marks> findMarksBySubjectId(Integer subjectId);
 

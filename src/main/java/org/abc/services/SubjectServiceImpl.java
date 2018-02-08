@@ -2,18 +2,16 @@ package org.abc.services;
 
 import org.abc.data.entity.Course;
 import org.abc.data.entity.Marks;
-import org.abc.data.entity.Student;
 import org.abc.data.entity.Subject;
 import org.abc.data.repository.MarksRepository;
 import org.abc.data.repository.StudentRepository;
 import org.abc.data.repository.SubjectRepository;
+import org.abc.exceptions.BadRequestException;
 import org.abc.exceptions.NotFoundException;
-import org.abc.security.models.JwtUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Nonnull;
-import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -80,7 +78,7 @@ public class SubjectServiceImpl implements SubjectService {
 
     @Override
     @Nonnull
-    public Subject getSubject(int subjectId) throws NotFoundException {
+    public Subject getAllSubjects(int subjectId) throws NotFoundException {
         Subject subject = subjectRepository.findSubjectById(subjectId);
         if (subject == null) {
             throw new NotFoundException(String.format("Subject with id %s not found", subjectId));
@@ -94,26 +92,43 @@ public class SubjectServiceImpl implements SubjectService {
 
         //Gets a list of all the subjects of a particular course.
         List<Subject> allCourseSubject = subjectRepository.findSubjectsByCourse(course);
-        if (allCourseSubject == null){
+        if (allCourseSubject.isEmpty()) {
             throw new NotFoundException("No subjects found for the course");
         }
         return allCourseSubject;
     }
 
     @Nonnull
-    public List<Subject> getStudentEnrolledSubjects(int studentId) {
+    @Override
+    public List<Subject> getStudentEnrolledSubjectsForSemester(Integer studentId, Integer semester) throws BadRequestException {
 
-        List<Marks> studentMarks = marksRepository.findMarksByStudentId(studentId);
+        List<Marks> studentMarks = marksRepository.findMarksByStudentIdAndSemester(studentId, semester);
         List<Subject> studentEnrolledSubjects = new ArrayList<>();
 
-        if (studentMarks == null) {
-            return null;
+        if (studentMarks.isEmpty()) {
+            throw new BadRequestException("Student hasn't enrolled yet for the semester.");
         }
 
         for (Marks mark : studentMarks) {
             studentEnrolledSubjects.add(mark.getSubject());
         }
+        return studentEnrolledSubjects;
+    }
 
+    @Nonnull
+    @Override
+    public List<Subject> getStudentAllEnrolledSubjects(Integer studentId) throws BadRequestException {
+
+        List<Marks> studentMarks = marksRepository.findMarksByStudentId(studentId);
+        List<Subject> studentEnrolledSubjects = new ArrayList<>();
+
+        if (studentMarks.isEmpty()) {
+            throw new BadRequestException("Student hasn't enrolled yet for the semester.");
+        }
+
+        for (Marks mark : studentMarks) {
+            studentEnrolledSubjects.add(mark.getSubject());
+        }
         return studentEnrolledSubjects;
     }
 }

@@ -107,7 +107,7 @@ public class StudentServiceImpl implements StudentService {
         List<Marks> subjectMarks = new ArrayList<>();
         int enrollingSemester = student.getCurrentSemester() + 1;
 
-        List<Subject> studentEnrolledSubjects = subjectService.getStudentEnrolledSubjects(student.getId());
+        List<Subject> studentEnrolledSubjects = subjectService.getStudentAllEnrolledSubjects(student.getId());
 
         // Validating the request
         for (Subject subject : subjects) {
