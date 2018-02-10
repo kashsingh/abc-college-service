@@ -1,5 +1,6 @@
 package org.abc.services;
 
+import org.abc.data.dto.MarksDetails;
 import org.abc.data.entity.Course;
 import org.abc.data.entity.Marks;
 import org.abc.data.entity.Subject;
@@ -100,19 +101,24 @@ public class SubjectServiceImpl implements SubjectService {
 
     @Nonnull
     @Override
-    public List<Subject> getStudentEnrolledSubjectsForSemester(Integer studentId, Integer semester) throws BadRequestException {
+    public List<MarksDetails> getStudentEnrolledSubjectMarksForSemester(Integer studentId, Integer semester) throws BadRequestException {
 
-        List<Marks> studentMarks = marksRepository.findMarksByStudentIdAndSemester(studentId, semester);
-        List<Subject> studentEnrolledSubjects = new ArrayList<>();
+        List<Marks> studentSemesterMarks = marksRepository.findMarksByStudentIdAndSemester(studentId, semester);
+        List<MarksDetails> semesterResultDetails = new ArrayList<>();
 
-        if (studentMarks.isEmpty()) {
+        if (studentSemesterMarks.isEmpty()) {
             throw new BadRequestException("Student hasn't enrolled yet for the semester.");
         }
 
-        for (Marks mark : studentMarks) {
-            studentEnrolledSubjects.add(mark.getSubject());
+        for (Marks mark : studentSemesterMarks) {
+            semesterResultDetails.add(new MarksDetails(mark.getStudent().getId(),
+                    mark.getSubject().getId(),
+                    mark.getSemester(),
+                    mark.getSubject().getSubjectName(),
+                    mark.getMarks()
+            ));
         }
-        return studentEnrolledSubjects;
+        return semesterResultDetails;
     }
 
     @Nonnull

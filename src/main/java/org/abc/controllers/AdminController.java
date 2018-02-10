@@ -218,7 +218,7 @@ public class AdminController {
     public ResponseEntity<Object> getStudentEnrolledSubjects(@PathVariable("student_id") int studentId,
                                                              @PathVariable("semester") int semester) {
         try {
-            return new ResponseEntity<>(subjectService.getStudentEnrolledSubjectsForSemester(studentId, semester), HttpStatus.OK);
+            return new ResponseEntity<>(subjectService.getStudentEnrolledSubjectMarksForSemester(studentId, semester), HttpStatus.OK);
         } catch (BadRequestException e) {
             e.printStackTrace();
             return new ResponseEntity<>(ImmutableMap.of("message", e.getMessage()), null, HttpStatus.NOT_FOUND);

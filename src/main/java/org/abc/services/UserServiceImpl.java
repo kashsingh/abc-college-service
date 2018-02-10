@@ -50,7 +50,7 @@ public class UserServiceImpl implements UserService{
 
         // Get a new password encoder and encode the new password.
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        editUserDetails.setPassword(passwordEncoder.encode(existingUser.getPassword()));
+        editUserDetails.setPassword(passwordEncoder.encode(editUserDetails.getPassword()));
 
         // Update the existingUser details and save it.
         existingUser.setPassword(editUserDetails.getPassword());
