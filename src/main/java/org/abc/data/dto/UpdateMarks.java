@@ -16,7 +16,7 @@ public class UpdateMarks {
     public UpdateMarks() {
     }
 
-    public UpdateMarks(@JsonProperty("subjects_marks") @Nonnull List<Map<String, String>> subjectMarks) {
+    public UpdateMarks(@JsonProperty("subjectMarks") @Nonnull List<Map<String, String>> subjectMarks) {
         this.subjectMarks = subjectMarks;
     }
 

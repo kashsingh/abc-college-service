@@ -10,6 +10,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
 import java.util.List;
+import java.util.Map;
 
 public interface AdminService {
 
@@ -25,12 +26,12 @@ public interface AdminService {
     void assignStudentMarks(int studentId, int semester, UpdateMarks newMarks) throws NotFoundException, BadRequestException;
 
     @Nonnull
-    List<Pair> getTopperStudentForBatch(Course course, String batch) throws NotFoundException;
+    Map<String, Object> getTopperStudentForBatch(Course course, String batch) throws NotFoundException;
 
     @Nonnull
-    List<Pair> getHighestAndLowestScoreSubjects(Course course) throws NotFoundException;
+    Map<String, Object> getHighestAndLowestScoreSubjects(Course course) throws NotFoundException;
 
     @Nonnull
-    List<List<Pair>> getClassResult(Course course, String batch, double threshold) throws NotFoundException;
+    List<Map<String, Object>> getClassResult(Course course, String batch, double threshold) throws NotFoundException;
 
 }

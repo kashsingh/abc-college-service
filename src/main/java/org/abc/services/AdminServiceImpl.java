@@ -181,7 +181,7 @@ public class AdminServiceImpl implements AdminService {
         Map<Integer, Float> updateSubjectMark = new HashMap();
 
         for (Map subjectMark : newMarks.getSubjectMarks()) {
-            updateSubjectMark.put(Integer.parseInt((String) subjectMark.get("subject_id")),
+            updateSubjectMark.put(Integer.parseInt((String) subjectMark.get("subjectId")),
                     Float.parseFloat((String) subjectMark.get("marks")));
         }
 
@@ -203,7 +203,7 @@ public class AdminServiceImpl implements AdminService {
 
     @Nonnull
     @Override
-    public List<Pair> getTopperStudentForBatch(Course course, String batch) throws NotFoundException {
+    public Map<String, Object> getTopperStudentForBatch(Course course, String batch) throws NotFoundException {
 
         //Get a list of students for the course and batch.
         List<Student> allClassStudents = studentRepository.findStudentsByCourseAndBatch(course, batch);
@@ -240,7 +240,8 @@ public class AdminServiceImpl implements AdminService {
             }
         }
 
-        List<Pair> topperResult = new ArrayList<>();
+        Map<String, Object> topperResult = new HashMap<>();
+
         if (classTopper.getId() != null) {
 
             User user = classTopper.getUser();
@@ -254,8 +255,8 @@ public class AdminServiceImpl implements AdminService {
                     classTopper.getBatch(),
                     classTopper.getCurrentSemester());
 
-            topperResult.add(Pair.of("topper_student", studentUser));
-            topperResult.add(Pair.of("percentage", highestPercentage));
+            topperResult.put("student", studentUser);
+            topperResult.put("percentage", highestPercentage);
 
         } else {
             throw new NotFoundException("Class topper doesn't exists.");
@@ -266,16 +267,14 @@ public class AdminServiceImpl implements AdminService {
 
     @Nonnull
     @Override
-    public List<Pair> getHighestAndLowestScoreSubjects(Course course) throws NotFoundException {
+    public Map<String, Object> getHighestAndLowestScoreSubjects(Course course) throws NotFoundException {
 
         // Gets all subjects for the course
         List<Subject> allSubjectsOfCourse = subjectRepository.findSubjectsByCourse(course);
 
         // If no subjects are found throw the exception.
         if (allSubjectsOfCourse == null) {
-
             throw new NotFoundException("No subjects found for the course.");
-
         } else {
             // Assuming that the highest and lowest scoring subjects is the first subject in allSubjectsOfScore
             Subject highScoreSubject = allSubjectsOfCourse.get(0);
@@ -332,16 +331,16 @@ public class AdminServiceImpl implements AdminService {
                 throw new NotFoundException("No marks record found for the course.");
             }
 
-            List<Pair> highLowScoreSubjects = new ArrayList<>();
-            highLowScoreSubjects.add(Pair.of("high", highScoreSubject));
-            highLowScoreSubjects.add(Pair.of("low", lowScoreSubject));
+            Map<String, Object> highLowScoreSubjects = new HashMap<>();
+            highLowScoreSubjects.put("high", highScoreSubject);
+            highLowScoreSubjects.put("low", lowScoreSubject);
             return highLowScoreSubjects;
         }
     }
 
     @Nonnull
     @Override
-    public List<List<Pair>> getClassResult(Course course, String batch, double threshold) throws NotFoundException {
+    public List<Map<String, Object>> getClassResult(Course course, String batch, double threshold) throws NotFoundException {
 
         // Get all the students of the class
         List<Student> allClassStudents = studentRepository.findStudentsByCourseAndBatch(course, batch);
@@ -352,7 +351,7 @@ public class AdminServiceImpl implements AdminService {
 
         } else {
 
-            List<List<Pair>> classResult = new ArrayList<>();
+            List<Map<String, Object>> classResult = new ArrayList<>();
 
             for (Student student : allClassStudents) {
 
@@ -374,7 +373,7 @@ public class AdminServiceImpl implements AdminService {
 
                 // If the student percentage is greater than the threshold then add it to classResult.
                 if (studentPercentage >= threshold) {
-                    List<Pair> studentResult = new ArrayList<>();
+                    Map<String, Object> studentResult = new HashMap<>();
 
                     //Get the student detail
                     User user = student.getUser();
@@ -388,8 +387,8 @@ public class AdminServiceImpl implements AdminService {
                             student.getBatch(),
                             student.getCurrentSemester());
 
-                    studentResult.add(Pair.of("student", studentUser));
-                    studentResult.add(Pair.of("percentage", studentPercentage));
+                    studentResult.put("student", studentUser);
+                    studentResult.put("percentage", studentPercentage);
                     classResult.add(studentResult);
                 }
             }

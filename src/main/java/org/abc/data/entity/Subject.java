@@ -25,7 +25,7 @@ public class Subject {
 
     @Nonnull
     @JsonProperty("subject_name")
-    @Column(name = "subject_name", columnDefinition = "VARCHAR(255)", nullable = false)
+    @Column(name = "subject_name", columnDefinition = "VARCHAR(255)", nullable = false, unique = true)
     private String subjectName;
 
     public Subject() {

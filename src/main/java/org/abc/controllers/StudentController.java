@@ -3,6 +3,7 @@ package org.abc.controllers;
 import com.google.common.collect.ImmutableMap;
 import org.abc.annotations.UserAuthorization;
 import org.abc.data.dto.EditUserDetails;
+import org.abc.data.dto.StudentUser;
 import org.abc.data.entity.Student;
 import org.abc.data.entity.Subject;
 import org.abc.exceptions.BadRequestException;
@@ -83,7 +84,7 @@ public class StudentController {
     @RequestMapping(value = "/view-result/semester/{semester}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> viewResult(HttpServletRequest request, @PathVariable("semester") int semester) {
         try {
-            JwtUser user = userService.getLoggedUser(request);
+//            JwtUser user = userService.getLoggedUser(request);
             return new ResponseEntity<>(studentService.viewSemesterResult(request, semester), HttpStatus.OK);
         } catch (NotFoundException e) {
             e.printStackTrace();
@@ -118,6 +119,20 @@ public class StudentController {
             System.out.print(studentId);
             return new ResponseEntity<>(
                     subjectService.getStudentAllEnrolledSubjects(studentId), HttpStatus.OK);
+        } catch (BadRequestException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(ImmutableMap.of("message", e.getMessage()), null, HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(ImmutableMap.of("message", "Internal Server Error"), null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @RequestMapping(value = "/all-course-subjects", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Object> getAllCourseSubjects(HttpServletRequest request) {
+        try {
+            StudentUser student = studentService.getStudent(request);
+            return new ResponseEntity<>(subjectService.viewCourseSubjects(student.getCourse()), HttpStatus.OK);
         } catch (NotFoundException e) {
             e.printStackTrace();
             return new ResponseEntity<>(ImmutableMap.of("message", e.getMessage()), null, HttpStatus.NOT_FOUND);
