@@ -10,6 +10,9 @@ import javax.annotation.Nonnull;
 public class ApplicationUser {
 
     @Nonnull
+    private long userId;
+
+    @Nonnull
     private String username;
 
     @Nonnull
@@ -34,6 +37,7 @@ public class ApplicationUser {
     }
 
     public ApplicationUser(
+            @JsonProperty("userId")long userId,
             @JsonProperty("username")String username,
             @JsonProperty("password") String password,
             @JsonProperty("firstname") String firstname,
@@ -41,6 +45,7 @@ public class ApplicationUser {
             @JsonProperty("email") String email,
             @JsonProperty("token") String token,
             @JsonProperty("isAdmin") boolean isAdmin) {
+        this.userId = userId;
         this.username = username;
         this.password = password;
         this.firstname = firstname;

@@ -58,6 +58,7 @@ public class AuthenticationRestController {
 
         JwtUser user = (JwtUser) userDetails;
         ApplicationUser loggedUser = new ApplicationUser();
+        loggedUser.setUserId(user.getId());
         loggedUser.setFirstname(user.getFirstname());
         loggedUser.setLastname(user.getLastname());
         loggedUser.setEmail(user.getEmail());
