@@ -1,7 +1,7 @@
 package org.abc.services;
 
-
 import org.abc.data.dto.EditUserDetails;
+import org.abc.data.dto.ScoringSubjectReport;
 import org.abc.data.dto.StudentUser;
 import org.abc.data.dto.UpdateMarks;
 import org.abc.data.entity.*;
@@ -12,7 +12,6 @@ import org.abc.data.repository.*;
 import org.abc.exceptions.BadRequestException;
 import org.abc.exceptions.NotFoundException;
 import org.abc.utils.TimeProvider;
-import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -209,40 +208,23 @@ public class AdminServiceImpl implements AdminService {
         List<Student> allClassStudents = studentRepository.findStudentsByCourseAndBatch(course, batch);
 
         //If the class is null, then throw the exception
-        if (allClassStudents == null) {
+        if (allClassStudents.isEmpty()) {
             throw new NotFoundException("No student found for the class.");
         }
 
         Student classTopper = new Student();
         double highestPercentage = 0.0;
+        // Comparator to compare percentages for students.
+        final Comparator<Student> comp = (s1, s2) -> Double.compare( getStudentPercentage(s1.getId()), getStudentPercentage(s2.getId()));
 
-        for (Student student : allClassStudents) {
-
-            double studentPercentage = 0.0;
-
-            int noOfSubjects = 0;
-
-            // Get all the marks for the student.
-            List<Marks> studentSubjectsMarks = marksRepository.findMarksByStudentId(student.getId());
-
-            // Calculate the student percentage.
-            for (Marks mark : studentSubjectsMarks) {
-                studentPercentage += mark.getMarks();
-                noOfSubjects++;
-            }
-            studentPercentage /= noOfSubjects;
-
-            // If the student percentage is higher than the current percentage then set it as highest
-            // and set the topper as current student.
-            if (studentPercentage > highestPercentage) {
-                highestPercentage = studentPercentage;
-                classTopper = student;
-            }
-        }
+        // Stream to get the class topper with maximum percentage.
+        classTopper = allClassStudents.stream().max(comp).get();
+        // Gets the percentage for class topper.
+        highestPercentage = getStudentPercentage(classTopper.getId());
 
         Map<String, Object> topperResult = new HashMap<>();
 
-        if (classTopper.getId() != null) {
+        if (highestPercentage != 0.0) {
 
             User user = classTopper.getUser();
             StudentUser studentUser = new StudentUser(
@@ -256,7 +238,7 @@ public class AdminServiceImpl implements AdminService {
                     classTopper.getCurrentSemester());
 
             topperResult.put("student", studentUser);
-            topperResult.put("percentage", highestPercentage);
+            topperResult.put("percentage", Math.round(highestPercentage*100.0)/100.0);
 
         } else {
             throw new NotFoundException("Class topper doesn't exists.");
@@ -267,75 +249,35 @@ public class AdminServiceImpl implements AdminService {
 
     @Nonnull
     @Override
-    public Map<String, Object> getHighestAndLowestScoreSubjects(Course course) throws NotFoundException {
+    public Map<String, Object> getHighestAndLowestScoreSubjects(Course course, String batch) throws NotFoundException {
 
-        // Gets all subjects for the course
-        List<Subject> allSubjectsOfCourse = subjectRepository.findSubjectsByCourse(course);
+        // Gets the ordinal value stored in db for course.
+        int courseId = course.ordinal();
+        List<ScoringSubjectReport> subjectsReport = subjectRepository.getScoringSubjectReport(batch, courseId);
 
-        // If no subjects are found throw the exception.
-        if (allSubjectsOfCourse == null) {
-            throw new NotFoundException("No subjects found for the course.");
-        } else {
-            // Assuming that the highest and lowest scoring subjects is the first subject in allSubjectsOfScore
-            Subject highScoreSubject = allSubjectsOfCourse.get(0);
-            Subject lowScoreSubject = allSubjectsOfCourse.get(0);
-
-            // Assuming that the high score and low score for the subjects is 0.0
-            double highestScore = 0.0;
-            double lowestScore = 0.0;
-
-            // Iterating over all the subjects.
-            for (Subject subject : allSubjectsOfCourse) {
-
-                // Get all the marks details for the particular subject
-                List<Marks> allMarksForSubject = marksRepository.findMarksBySubjectId(subject.getId());
-
-                // Assuming the subject's total marks for all the students and the students are zero.
-                double subjectTotalMarks = 0.0;
-                int totalStudents = 0;
-
-                // Iterate over every marks detail and update subject's total marks and number of students.
-                for (Marks marks : allMarksForSubject) {
-                    subjectTotalMarks += marks.getMarks();
-                    totalStudents++;
-                }
-
-                // Finding the percentage of the subject.
-                double subjectScore = 0.0;
-                if (subjectTotalMarks > 0) {
-                    subjectScore = subjectTotalMarks / totalStudents;
-                }
-
-                // If the highest and lowest scores are zero then update them with the score of first
-                // subject's score which is not zero.
-                if (highestScore == 0.0 && lowestScore == 0.0) {
-                    highestScore = subjectScore;
-                    lowestScore = subjectScore;
-                }
-                // Else if the subject score is greater than highestScore than update the highestScore
-                // and highScoreSubject flags.
-                else if (subjectScore > highestScore) {
-                    highestScore = subjectScore;
-                    highScoreSubject = subject;
-                }
-                // Else if subject score is lower than the lowestScore than update the lowestScore and
-                // lowScoreSubject flag
-                else if (subjectScore < lowestScore) {
-                    lowestScore = subjectScore;
-                    lowScoreSubject = subject;
-                }
-            }
-
-            // If the highest and lowest score is still zero then throw the exception.
-            if (highestScore == 0.0 && lowestScore == 0.0) {
-                throw new NotFoundException("No marks record found for the course.");
-            }
-
-            Map<String, Object> highLowScoreSubjects = new HashMap<>();
-            highLowScoreSubjects.put("high", highScoreSubject);
-            highLowScoreSubjects.put("low", lowScoreSubject);
-            return highLowScoreSubjects;
+        if (subjectsReport.isEmpty()){
+            throw new NotFoundException("No marks record found for the batch.");
         }
+
+    /*  Since the query returns list of all subjects enrolled by students of the batch
+        along with the the average marks scored by them in those subjects and the list is sorted in descending
+        order of their score, so the first subject is the highest scoring subject and the last one should be least scoring.
+        Although if the highest and lowest score is 0 then we can say that highest and lowest scoring subjects don't exists.*/
+
+        ScoringSubjectReport highScoreSubject = subjectsReport.get(0);
+        ScoringSubjectReport lowScoreSubject = subjectsReport.get(subjectsReport.size() - 1);
+
+//      If the highest and lowest score is still zero then throw the exception.
+        if (highScoreSubject.getAverageMarks() == 0.0 && lowScoreSubject.getAverageMarks() == 0.0) {
+            throw new NotFoundException("Marks haven't been updated yet.");
+        }
+
+        Map<String, Object> highLowScoreSubjects = new HashMap<>();
+
+        highLowScoreSubjects.put("high", highScoreSubject);
+        highLowScoreSubjects.put("low", lowScoreSubject);
+
+        return highLowScoreSubjects;
     }
 
     @Nonnull
@@ -346,30 +288,15 @@ public class AdminServiceImpl implements AdminService {
         List<Student> allClassStudents = studentRepository.findStudentsByCourseAndBatch(course, batch);
 
         // Throw the exception if no student record found for the class.
-        if (allClassStudents == null) {
-            throw new NotFoundException("No Student found for the Batch!");
-
+        if (allClassStudents.isEmpty()) {
+            throw new NotFoundException("No Student found for the Batch.");
         } else {
 
             List<Map<String, Object>> classResult = new ArrayList<>();
 
             for (Student student : allClassStudents) {
 
-                double studentTotal = 0.0;
-                double studentPercentage = 0.0;
-                int noOfSubjects = 0;
-                List<Marks> studentSubjectsMarks = marksRepository.findMarksByStudentId(student.getId());
-
-                // Calculate noOfSubjects and studentTotal.
-                for (Marks mark : studentSubjectsMarks) {
-                    studentTotal += mark.getMarks();
-                    noOfSubjects++;
-                }
-
-                // If the student total is greater then zero then find percentage for the student.
-                if (studentTotal > 0) {
-                    studentPercentage = studentTotal / noOfSubjects;
-                }
+                Double studentPercentage = getStudentPercentage(student.getId());
 
                 // If the student percentage is greater than the threshold then add it to classResult.
                 if (studentPercentage >= threshold) {
@@ -388,7 +315,7 @@ public class AdminServiceImpl implements AdminService {
                             student.getCurrentSemester());
 
                     studentResult.put("student", studentUser);
-                    studentResult.put("percentage", studentPercentage);
+                    studentResult.put("percentage", Math.round(studentPercentage*100.0)/100.0);
                     classResult.add(studentResult);
                 }
             }
@@ -398,6 +325,14 @@ public class AdminServiceImpl implements AdminService {
             }
             return classResult;
         }
+    }
 
+    private Double getStudentPercentage(int studentId){
+        Double studentPercentage = 0.0;
+        studentPercentage = marksRepository.findPercentageByStudentId(studentId);
+        if (studentPercentage == null){
+            studentPercentage = 0.0;
+        }
+        return studentPercentage;
     }
 }

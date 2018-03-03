@@ -29,7 +29,7 @@ public interface AdminService {
     Map<String, Object> getTopperStudentForBatch(Course course, String batch) throws NotFoundException;
 
     @Nonnull
-    Map<String, Object> getHighestAndLowestScoreSubjects(Course course) throws NotFoundException;
+    Map<String, Object> getHighestAndLowestScoreSubjects(Course course, String batch) throws NotFoundException;
 
     @Nonnull
     List<Map<String, Object>> getClassResult(Course course, String batch, double threshold) throws NotFoundException;

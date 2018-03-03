@@ -188,10 +188,10 @@ public class AdminController {
         }
     }
 
-    @RequestMapping(value = "report/course/{course}/scoring-subjects", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> getHighAndLowScoringSubjects(@PathVariable("course") Course course) {
+    @RequestMapping(value = "report/course/{course}/batch/{batch}/scoring-subjects", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Object> getHighAndLowScoringSubjects(@PathVariable("course") Course course, @PathVariable("batch") String batch) {
         try {
-            return new ResponseEntity<>(adminService.getHighestAndLowestScoreSubjects(course), HttpStatus.OK);
+            return new ResponseEntity<>(adminService.getHighestAndLowestScoreSubjects(course, batch), HttpStatus.OK);
         } catch (NotFoundException e) {
             System.out.println(e);
             return new ResponseEntity<>(ImmutableMap.of("message", e.getMessage()), null, HttpStatus.NOT_FOUND);
