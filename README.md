@@ -1,4 +1,4 @@
-# ABC College Portal
+# ABC College Portal Service
 
 ## About
 This is just a simple demo for implementing a college portal for the students using **Spring Boot** with **Spring Security** using **JWT (JSON Web Token)** for application security. This solution is partially based on the demo projects [Cerberus](https://github.com/brahalla/Cerberus) and [JWT Spring Security Demo](https://github.com/szerhusenBC/jwt-spring-security-demo). Thanks to the authors!
@@ -28,7 +28,7 @@ There are three endpoints that can be accessed by the users:
 
 I'm using [bcrypt](https://en.wikipedia.org/wiki/Bcrypt) to encode passwords. Your can generate your hashes with this simple tool: [Bcrypt Generator](https://www.bcrypt-generator.com)
 
-###### Note: I haven't developed the front-end for the application yet but will provide a link to its repository once I complete them.
+###### Note: You can try the frontend client created using Angular 5 and Clarity Design System for the service [here](https://github.com/kashsingh/abc-portal-app).
 
 
 ## Copyright and license
